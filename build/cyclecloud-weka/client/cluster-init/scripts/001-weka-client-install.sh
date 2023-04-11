@@ -9,6 +9,14 @@ weka_name=$(jetpack config weka.cluster_name)
 mount_point=$(jetpack config weka.mount_point)
 fs=$(jetpack config weka.fs)
 
+if [ "$(which yum)" ]; then
+    pkg_cmd=yum
+else
+    pkg_cmd=apt
+fi
+${pkg_cmd} install -y jq
+
+
 # Find a Weka frontend to mount
 weka=$(curl -s -k --user ${ccuser}:${ccpass} "${ccurl}/clusters/${weka_name}/nodes" | jq -r '.nodes[] | select(.Name=="weka-1") | .PrivateIp')
 

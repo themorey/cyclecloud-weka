@@ -14,10 +14,11 @@ IPS=$(curl -s -k --user ${ccuser}:${ccpass} "${ccurl}/clusters/${cluster_name}/n
 weka_status_ready="Containers: 1/1 running (1 weka)"
 ssh_command="ssh -o StrictHostKeyChecking=no"
 
-if [ ! -f /tmp/weka.cluster_created ]; then
-    weka cluster create ${VMS} --host-ips ${IPS} 1> /dev/null 2>& 1 || true
-    touch /tmp/weka.cluster_created
-fi
+#if [ ! -f /tmp/weka.cluster_created ]; then
+#    weka cluster create ${VMS} --host-ips ${IPS} 1> /dev/null 2>& 1 || true
+#    touch /tmp/weka.cluster_created
+#fi
+weka cluster create ${VMS} --host-ips ${IPS} 1> /dev/null 2>& 1 || true
 
 
 sleep 30s
@@ -81,3 +82,5 @@ weka alerts mute JumboConnectivity 365d
 weka alerts mute UdpModePerformanceWarning 365d
 echo "completed successfully" > /tmp/weka_clusterization_completion_validation
 
+jetpack log "Weka cluster is running."
+jetpack log "Access cluster at https://$(jetpack config cyclecloud.instance.ipv4):14000"

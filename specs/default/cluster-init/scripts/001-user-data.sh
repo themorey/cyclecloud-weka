@@ -132,8 +132,6 @@ fi
 
 if [ "$(jetpack config cyclecloud.node.name)" == "weka-1" ]; then
   /bin/bash $CYCLECLOUD_SPEC_PATH/files/clusterize.sh
-  jetpack log "Weka cluster is running."
-  jetpack log "Access cluster at https://$(jetpack config cyclecloud.instance.ipv4):14000"
 fi
 # call the script to build the cluster
 #/bin/bash $CYCLECLOUD_SPEC_PATH/files/clusterize.sh

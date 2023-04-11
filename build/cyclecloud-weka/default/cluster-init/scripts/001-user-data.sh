@@ -1,5 +1,9 @@
 #!/usr/bin/bash
 set -ex
+
+### NOTE:  derived from Weka Terraform project on Github   ###
+### https://github.com/weka/terraform-azure-weka           ###
+
 ## Map CC Jetpack variables to Weka Terraform variables
 export ofed_version=$(jetpack config weka.ofed_version)
 export hosts_num=$(jetpack config weka.num_hosts)

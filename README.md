@@ -70,7 +70,7 @@ The node default section will need the following additions:
 ```
 [[[configuration]]]
 # Weka mount options
-weka.name = $WekaClusterName
+weka.cluster_name = $WekaClusterName
 weka.mount_point = $WekaMountPoint
 weka.fs = $WekaFileSystem
 

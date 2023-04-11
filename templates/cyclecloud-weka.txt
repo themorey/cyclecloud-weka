@@ -1,0 +1,289 @@
+
+################################
+## Cluster Configuration File ##
+################################
+
+[cluster weka]
+FormLayout = selectionpanel
+Category = Filesystems 
+IconURL = https://www.weka.io/wp-content/uploads/files/2020/03/Weka_Logo_500_225_P.png
+AutoScale = false
+UseLowPrio = false
+
+    [[node defaults]]
+    UsePublicNetwork = $UsePublicNetwork
+    Credentials = $Credentials    
+    ImageName = $ImageName
+    SubnetId = $SubnetId
+    Region = $Region
+    KeyPairLocation = ~/.ssh/cyclecloud.pem
+
+        [[[configuration]]]
+        # Disable ip-XXXXXXXX hostname generation
+        cyclecloud.hosts.standalone_dns.enabled = ${AzureDNS==false}
+        cyclecloud.hosts.simple_vpc_dns.enabled = ${AzureDNS==false}
+
+        # For fast spin-up after Deallocate, force an immediate re-converge on boot
+        cyclecloud.converge_on_boot = true
+    
+        # Disable normal NFS exports and mounts
+        cyclecloud.mounts.sched.disabled = true
+        cyclecloud.mounts.shared.disabled = true
+        cyclecloud.exports.sched.disabled = true
+        cyclecloud.exports.shared.disabled = true
+        cyclecloud.exports.sched.samba.enabled = false
+        cyclecloud.exports.shared.samba.enabled = false
+        cyclecloud.exports.defaults.samba.enabled = false      
+        cshared.server.legacy_links_disabled = true
+
+        # Weka parameters
+        weka.prefix = $WekaPrefix
+        weka.private_key = $private_key
+        weka.apt_repo_url = $apt_repo_url
+        weka.weka_io_token = $weka_io_token
+        weka.hotspare = $hotspare
+        weka.install_ofed_url = $install_ofed_url
+        weka.ofed_version = $ofed_version
+        weka.install_weka_url = $install_weka_url
+        weka.protection_level = $protection_level
+        weka.stripe_width = $stripe_width
+        weka.traces_per_ionode = $traces_per_ionode
+        weka.version = $WekaVersion
+        weka.set_obs_integration = $WekaBlobIntegration
+        weka.storage_account = $WekaStorageAccountName
+        weka.storage_key = $WekaBlobKey
+        weka.obs_name = $WekaBlobContainerName
+        weka.tiering_percent = $tiering_ssd_percent
+        weka.num_hosts = $WekaClusterSize
+
+    [[nodearray weka]]
+    MachineType = $SvrMachineType
+    Azure.SingleScaleset = True
+    InitialCount = $WekaClusterSize
+    ProximityPlacementGroupId = $ProximityPlacementGroupId
+    ComputerNamePrefix = ${ifThenElse(WekaPrefix=="Cluster Prefix", ClusterName, WekaPrefix)}
+
+        [[[configuration]]]
+        [[[volume wekaiosw]]]
+        Size = 64
+        StorageAccountType = StandardSSD_LRS
+        Azure.Lun = 10
+        Azure.Caching = readwrite
+
+        [[[cluster-init cyclecloud-weka:default]]]
+
+[parameters About]
+Order = 1
+
+    [[parameters About cyclecloud-weka]]
+
+        [[[parameter cyclecloud-weka]]]
+        HideLabel = true
+        Config.Plugin = pico.widget.HtmlTemplateWidget
+        Config.Template = '''<p>Weka is a High Performance Parallel Filesystem, often used in High Performance Computing. These Cyclecloud project and templates quickly set up a Weka cluster, consisting of a specified number of nodes.
+This cluster is designed for high performance utilizing the local NVMe drives of the Ls_v3 nodes.
+On top of this, data can be tiered to Azure Blob for additional capacity and cost considerations.</p>'''
+
+[parameters Required Settings]
+Order = 10
+
+    [[parameters Virtual Machines ]]
+    Description = "Each node in the Weka cluster is the same and different roles (ie. MDS, OSS) run in LXC containers."
+    Order = 20
+
+        [[[parameter Region]]]
+        Label = Region
+        Description = Deployment Location
+        ParameterType = Cloud.Region
+        DefaultValue = eastus2
+
+        [[[parameter SvrMachineType]]]
+        Label = Svr VM Type
+        Description = The VM type for the Server nodes of Weka.
+        ParameterType = StringList
+        Config.Plugin = pico.form.Dropdown
+        Config.FreeForm = false
+        Config.Entries := {[Value="Standard_L8s_v3"], [Value="Standard_L16s_v3"]}
+        DefaultValue = Standard_L8s_v3
+
+        [[[parameter ProximityPlacementGroupId]]]
+        Label = Proximity R_ID
+        Description = The Azure Resource ID of an existing Proximity Placement Group.
+        DefaultValue = ""
+
+    [[parameters Networking]]
+    Order = 40
+
+        [[[parameter SubnetId]]]
+        Label = Subnet ID
+        Description = Subnet Resource Path (ResourceGroup/VirtualNetwork/Subnet)
+        ParameterType = Azure.Subnet
+        Required = True
+
+        [[[parameter AzureDNS]]]
+        Label = Azure DNS
+        Description = Check this box if using Azure DNS (including Private DNS Zone)
+        ParameterType = Boolean
+        DefaultValue = true
+
+        [[[parameter WekaPrefix]]]
+        Label = Node Prefix
+        Description = Prefix for generated node names, i.e. "weka-" generates azure-<UUID>. Use 'Cluster Prefix' to get $ClusterName-<UUID>.>
+        ParameterType = StringList
+        Config.Plugin = pico.form.Dropdown
+        Config.FreeForm = true
+        DefaultValue = "weka-"
+        Config.Entries := {[Value=""], [Value="Cluster Prefix"]}
+        Conditions.Hidden := AzureDNS != true
+
+
+[parameters Advanced Settings]
+Order = 20
+
+    [[parameters Azure Settings]]
+    Order = 10 
+
+        [[[parameter Credentials]]]
+        Description = The credentials for the cloud provider
+        ParameterType = Cloud.Credentials
+
+
+    [[parameters Software]]
+    Description = "Specify the scheduling software, and base OS installed on all nodes, and optionally the cluster-init and chef versions from your Locker."
+    Order = 20
+
+        [[[parameter ImageName]]]
+        Label = Base OS
+        ParameterType = Cloud.Image
+        Config.OS = linux
+        DefaultValue = "microsoft-dsvm:ubuntu-hpc:2004:latest"
+        Config.Filter := Package in {"cycle.image.centos7", "almalinux8"}
+
+
+[parameters Weka Settings]
+Order = 30
+
+    [[parameters General Settings]]
+    Order = 10
+    Description = "Use a Weka cluster as a high performance parallel filesystem. Settings for defining the Weka cluster"
+
+        [[[parameter WekaVersion]]]
+        Label = Weka Version
+        Description = The Weka software version to use
+        DefaultValue = "4.1.0.71"
+        Config.FreeForm = true
+        
+        [[[parameter WekaClusterSize]]]
+        Label = Weka Nodes
+        Description = The number of Weka nodes to start.
+        DefaultValue = 6
+        Config.Plugin = pico.form.NumberTextBox
+        Config.MinValue = 6
+        Config.IntegerOnly = true
+        Required = True
+
+        [[[parameter private_key]]]
+        Label = SSH Private Key
+        ParameterType = Password
+        Description = Private key for cluster formation
+        Required = True
+
+    [[parameters Object Store Settings]]
+    Order = 20
+    Description = "Weka can use Blob storage to import or archive data."
+
+        [[[parameter WekaBlobIntegration]]]
+        Label = Enable Blob
+        DefaultValue = false
+        Widget.Plugin = pico.form.BooleanCheckBox
+        Widget.Label = (requires storage details below)
+
+        [[[parameter tiering_ssd_percent]]]
+        Label = Tiering % 
+        Description = When set_obs_integration is true, this variable sets the capacity percentage of the filesystem that resides on SSD. For example, for an SSD with a total capacity of 20GB, and the tiering_ssd_percent is set to 20, the total available capacity is 100GB. (integer).
+        DefaultValue = 20
+        Config.Plugin = pico.form.NumberTextBox
+        Config.MinValue = 10
+        Config.IntegerOnly = true        
+        Conditions.Disabled := WekaBlobIntegration is false
+
+        [[[parameter WekaStorageAccountName]]]
+        Label = Storage Account
+        Description = The Azure Storage Account to tier from Weka.
+        DefaultValue = <blob account name> 
+        Conditions.Disabled := WekaBlobIntegration is false
+
+        [[[parameter WekaBlobKey]]]
+        Label = Storage Key
+        Description = The blob account key.
+        DefaultValue = <blob account key>
+        Conditions.Disabled := WekaBlobIntegration is false
+
+	    [[[parameter WekaBlobContainerName]]]
+        Label = Blob Container
+        Description = The Azure Blob container name.
+        DefaultValue = <blob container>
+        Conditions.Disabled := WekaBlobIntegration is false
+
+    [[parameters Weka Optional Settings]]
+    Order = 20
+    Description = "Configure optional Weka settings.  More details can be found here:  https://docs.weka.io/"
+
+        [[[parameter apt_repo_url]]]
+        Label = Repo URL
+        Description = The URL of the apt private repository.
+        Optional = true
+
+        [[[parameter weka_io_token]]]
+        Label = Weka token
+        Description = The token to download the Weka release from get.weka.io.
+        Optional = true
+
+        [[[parameter hotspare]]]
+        Label = Hot spare 
+        Description = Hot-spare value (integer).
+        DefaultValue = 0
+        Config.Plugin = pico.form.NumberTextBox
+        Config.MinValue = 0
+        Config.IntegerOnly = true
+        Optional = true
+
+        [[[parameter install_ofed_url]]]
+        Label = OFED URL
+        Description = The URL of the Blob with the OFED tgz file.
+        Optional = true
+
+        [[[parameter ofed_version]]]
+        Label = OFED Version
+        Description = The OFED driver version to install for your OS image (if not using Azure HPC image).
+        Optional = true   
+
+        [[[parameter install_weka_url]]]
+        Label = Weka URL
+        Description = The URL of the Weka release download tar file.
+        Optional = true
+
+        [[[parameter protection_level]]]
+        Label = Protection Level 
+        Description = Cluster data protection level. (integer).
+        DefaultValue = 2
+        Config.Plugin = pico.form.NumberTextBox
+        Config.MinValue = 1
+        Config.IntegerOnly = true
+        Optional = true
+        
+        [[[parameter stripe_width]]]
+        Label = Stripe Width
+        Description = "Stripe width = cluster_size - protection_level - 1 (by default). (integer)."
+        DefaultValue = 3
+        Config.Plugin = pico.form.NumberTextBox
+        Optional = true    
+
+        [[[parameter traces_per_ionode]]]
+        Label = Traces 
+        Description = The number of traces per ionode. Traces are low-level events generated by Weka processes and are used as troubleshooting information for support purposes. (integer).
+        DefaultValue = 10
+        Config.Plugin = pico.form.NumberTextBox
+        Config.MinValue = 1
+        Config.IntegerOnly = true
+        Optional = true

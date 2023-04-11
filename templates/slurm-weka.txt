@@ -47,7 +47,7 @@ Autoscale = $Autoscale
         cshared.server.legacy_links_disabled = true
 
         # Weka mount options
-        weka.name = $WekaClusterName
+        weka.cluster_name = $WekaClusterName
         weka.mount_point = $WekaMountPoint
         weka.fs = $WekaFileSystem
 

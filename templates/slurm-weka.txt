@@ -3,10 +3,10 @@
 ## Cluster Configuration File ##
 ################################
 
-[cluster Slurm]
+[cluster Slurm-Weka]
 FormLayout = selectionpanel
 Category = Schedulers
-
+IconURL = https://github.com/Azure/cyclecloud-slurm/blob/master/icon.png?raw=true
 Autoscale = $Autoscale
 
     [[node defaults]]

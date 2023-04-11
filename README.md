@@ -49,16 +49,22 @@ cyclecloud project upload <container>
 cyclecloud import_template -f templates/cyclecloud=weka.txt
 ```
 
+An explanation of the [Weka config options](https://github.com/weka/terraform-azure-weka#inputs) can be found on their Github page for the Terraform project.
+
+
+### Client install and mount
 An extended Slurm template is included in this repository with the option for choose a CycleCloud deployed Weka filesystem to configure and mount on the nodes:
 ```
 cyclecloud import_template -f templates/slurm-weka.txt
 ```
-Note: The Slurm template a modified version of the official one [here](https://github.com/Azure/cyclecloud-slurm/blob/2.7.0/templates/slurm.txt)
+Note: The Slurm template is a modified version of the official one [here](https://github.com/Azure/cyclecloud-slurm/blob/2.7.0/templates/slurm.txt)
 
 
 You should be able to create a new "Weka" cluster in the Azure CycleCloud User Interface. Once this has been created you can create start the Slurm-Weka cluster and, in the configuration, select the new file system to be used.
 
 ### Extending a template to use a Lustre filesystem
+Additional cluster templates (ie. PBSPro, GridEngine, LSF) can be updated to install and mount a Weka filesystem with the additions below.
+
 The node default section will need the following additions:
 
 ```

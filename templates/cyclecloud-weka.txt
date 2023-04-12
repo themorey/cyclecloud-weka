@@ -64,8 +64,14 @@ UseLowPrio = false
     ComputerNamePrefix = ${ifThenElse(WekaPrefix=="Cluster Prefix", ClusterName, WekaPrefix)}
 
         [[[configuration]]]
+
+        [[[volume boot]]]
+        Size = 30
+        StorageAccountType = StandardSSD_LRS
+        Azure.Caching = readwrite
+
         [[[volume wekaiosw]]]
-        Size = 64
+        Size = 128
         StorageAccountType = StandardSSD_LRS
         Azure.Lun = 10
         Azure.Caching = readwrite

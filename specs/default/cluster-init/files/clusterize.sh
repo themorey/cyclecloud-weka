@@ -16,8 +16,7 @@ ssh_command="ssh -o StrictHostKeyChecking=no"
 
 
 # create the cluster and login
-weka cluster create ${VMS} --host-ips ${IPS} --admin-password "${weka_password}" 1> /dev/null 2>& 1 || true
-weka user login admin "${weka_password}"
+weka cluster create ${VMS} --host-ips ${IPS} 1> /dev/null 2>& 1 || true
 
 sleep 30s
 

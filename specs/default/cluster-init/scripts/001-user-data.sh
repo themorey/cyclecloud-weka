@@ -5,6 +5,7 @@ set -ex
 ### https://github.com/weka/terraform-azure-weka           ###
 
 ## Map CC Jetpack variables to Weka Terraform variables
+export weka_password=$(jetpack config weka.admin_password)
 export ofed_version=$(jetpack config weka.ofed_version)
 export hosts_num=$(jetpack config weka.num_hosts)
 export weka_version=$(jetpack config weka.version)

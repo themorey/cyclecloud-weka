@@ -37,6 +37,7 @@ UseLowPrio = false
         cshared.server.legacy_links_disabled = true
 
         # Weka parameters
+        weka.admin_password = $WekaAdminPassword
         weka.prefix = $WekaPrefix
         weka.private_key = $private_key
         weka.apt_repo_url = $apt_repo_url
@@ -186,6 +187,12 @@ Order = 30
         Label = SSH Private Key
         ParameterType = Password
         Description = Private key for cluster formation
+        Required = True
+
+        [[[parameter WekaAdminPassword]]]
+        Label = Admin Password
+        ParameterType = Password
+        Description = Weka cluster admin password
         Required = True
 
     [[parameters Object Store Settings]]

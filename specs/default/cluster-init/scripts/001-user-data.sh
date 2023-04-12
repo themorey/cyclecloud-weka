@@ -130,8 +130,7 @@ EOL
   chmod +x $CYCLECLOUD_SPEC_PATH/files/clusterize.sh
 fi
 
+# call the script to build the cluster (first node only)
 if [ "$(jetpack config cyclecloud.node.name)" == "weka-1" ]; then
   /bin/bash $CYCLECLOUD_SPEC_PATH/files/clusterize.sh
 fi
-# call the script to build the cluster
-#/bin/bash $CYCLECLOUD_SPEC_PATH/files/clusterize.sh

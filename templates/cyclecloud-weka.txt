@@ -121,6 +121,12 @@ Order = 10
         ParameterType = Azure.Subnet
         Required = True
 
+        [[[parameter UsePublicNetwork]]]
+        Label = Public IP
+        Description = Add a Public IP to the cluster
+        DefaultValue = false
+        ParameterType = Boolean
+
         [[[parameter AzureDNS]]]
         Label = Azure DNS
         Description = Check this box if using Azure DNS (including Private DNS Zone)

@@ -14,15 +14,14 @@ IPS=$(curl -s -k --user ${ccuser}:${ccpass} "${ccurl}/clusters/${cluster_name}/n
 weka_status_ready="Containers: 1/1 running (1 weka)"
 ssh_command="ssh -o StrictHostKeyChecking=no"
 
-#if [ ! -f /tmp/weka.cluster_created ]; then
-#    weka cluster create ${VMS} --host-ips ${IPS} 1> /dev/null 2>& 1 || true
-#    touch /tmp/weka.cluster_created
-#fi
-weka cluster create ${VMS} --host-ips ${IPS} 1> /dev/null 2>& 1 || true
 
+# create the cluster and login
+weka cluster create ${VMS} --host-ips ${IPS} --admin-password "${weka_password}" 1> /dev/null 2>& 1 || true
+weka user login admin "${weka_password}"
 
 sleep 30s
 
+# add drives to the cluster then update the cluster
 if [ ! -f /tmp/weka.nvme_added ]; then
     for (( i=0; i<${hosts_num}; i++ )); do
 	    for (( d=0; d<${num_drive_containers}; d++ )); do

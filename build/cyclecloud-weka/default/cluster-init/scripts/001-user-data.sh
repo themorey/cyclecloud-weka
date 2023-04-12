@@ -5,6 +5,7 @@ set -ex
 ### https://github.com/weka/terraform-azure-weka           ###
 
 ## Map CC Jetpack variables to Weka Terraform variables
+export weka_password=$(jetpack config weka.admin_password)
 export ofed_version=$(jetpack config weka.ofed_version)
 export hosts_num=$(jetpack config weka.num_hosts)
 export weka_version=$(jetpack config weka.version)
@@ -130,8 +131,7 @@ EOL
   chmod +x $CYCLECLOUD_SPEC_PATH/files/clusterize.sh
 fi
 
+# call the script to build the cluster (first node only)
 if [ "$(jetpack config cyclecloud.node.name)" == "weka-1" ]; then
   /bin/bash $CYCLECLOUD_SPEC_PATH/files/clusterize.sh
 fi
-# call the script to build the cluster
-#/bin/bash $CYCLECLOUD_SPEC_PATH/files/clusterize.sh

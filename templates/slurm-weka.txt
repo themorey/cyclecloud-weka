@@ -47,7 +47,7 @@ Autoscale = $Autoscale
         cshared.server.legacy_links_disabled = true
 
         # Weka mount options
-        weka.cluster_name = $WekaClusterName
+        weka.cluster_address = $WekaClusterAddress
         weka.mount_point = $WekaMountPoint
         weka.fs = $WekaFileSystem
 
@@ -421,12 +421,11 @@ Order = 15
 Order = 17
 Description = "Add Weka cluster information for mounting"
 
-    [[parameter WekaClusterName]]
-    Label = Weka Cluster
-    Description = Name of the Weka cluster to connect to. This cluster should be orchestrated by the same CycleCloud Server
+    [[parameter WekaClusterAddress]]
+    Label = Weka Addresses
+    Description = Enter the Load Balancer IP or a list of individual Weka Node IPs (ie. ={"10.0.0.4","10.0.0.5","10.0.0.6","10.0.0.7"} )
     Required = True
-    Config.Plugin = pico.form.QueryDropdown
-    Config.Query = select ClusterName as Name from Cloud.Node where Cluster().IsTemplate =!= True && ClusterInitSpecs["cyclecloud-weka:default"] isnt undefined
+    Config.ParameterType = String
     Config.SetDefault = false
     
     [[parameter WekaMountPoint]]

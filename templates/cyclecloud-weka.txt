@@ -67,7 +67,7 @@ UseLowPrio = false
 
         [[[volume boot]]]
         Size = 30
-        StorageAccountType = Premium_LRS
+        StorageAccountType = StandardSSD_LRS
 
         [[[volume wekaiosw]]]
         Size = 128
@@ -76,6 +76,7 @@ UseLowPrio = false
         Azure.Caching = readwrite
 
         [[[cluster-init cyclecloud-weka:default]]]
+
 
 [parameters About]
 Order = 1
@@ -108,7 +109,7 @@ Order = 10
         ParameterType = StringList
         Config.Plugin = pico.form.Dropdown
         Config.FreeForm = false
-        Config.Entries := {[Value="Standard_L8s_v3"], [Value="Standard_L16s_v3"]}
+        Config.Entries := {[Value="Standard_L8as_v3"], [Value="Standard_L8s_v3"], [Value="Standard_L16s_v3"], [Value="Standard_L32s_v3"], [Value="Standard_L48s_v3"], [Value="Standard_L64s_v3"], [Value="Standard_L80s_v3"]}
         DefaultValue = Standard_L8s_v3
 
         [[[parameter ProximityPlacementGroupId]]]
@@ -167,8 +168,8 @@ Order = 20
         Label = Base OS
         ParameterType = Cloud.Image
         Config.OS = linux
-        DefaultValue = "microsoft-dsvm:ubuntu-hpc:2004:latest"
-        Config.Filter := Package in {"cycle.image.centos7", "almalinux8"}
+        DefaultValue = "Canonical:0001-com-ubuntu-server-focal:20_04-lts-gen2:"
+#        Config.Filter := Package in {"cycle.image.centos7", "almalinux8"}
 
 
 [parameters Weka Settings]

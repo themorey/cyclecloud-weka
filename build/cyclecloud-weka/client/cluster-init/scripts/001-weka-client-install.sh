@@ -29,4 +29,4 @@ curl http://${weka}:14000/dist/v1/install | sh
 
 # You can mount a stateless or stateful client on the filesystem using UDP. The following is an example of mounting a stateless client: 
 # mount -t wekafs -o net=udp <Load balancer DNS name or IP address>/<filesystem name> /mnt/weka
-mount -t wekafs -o net=udp ${weka}/${fs} ${mount_point}
+mount -t wekafs -o net=udp,num_cores=1 ${weka}/${fs} ${mount_point}

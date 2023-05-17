@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 set -ex
 
 ### NOTE:  derived from Weka Terraform project on Github   ###
@@ -29,16 +29,36 @@ export tiering_ssd_percent=$(jetpack config weka.tiering_percent)
 export private_key=$(jetpack config weka.private_key  | \
   sed 's/-----BEGIN RSA PRIVATE KEY----- /-----BEGIN RSA PRIVATE KEY----- \n/g' | \
   sed 's/ -----END RSA PRIVATE KEY-----/\n-----END RSA PRIVATE KEY-----/g')
-if [ "$(jetpack config azure.metadata.compute.vmSize)"=="Standard_L8s_v3" ]; then
+if [[ "$(jetpack config azure.metadata.compute.vmSize)" =~ Standard_L8 ]]; then
   export num_drive_containers=1
   export num_compute_containers=1
   export num_frontend_containers=1
   export compute_memory="31GB"
-else
+elif [[ "$(jetpack config azure.metadata.compute.vmSize)" =~ Standard_L16 ]]; then
   export num_drive_containers=2
   export num_compute_containers=4
   export num_frontend_containers=1
   export compute_memory="72GB"
+elif [[ "$(jetpack config azure.metadata.compute.vmSize)" =~ Standard_L32 ]]; then
+  export num_drive_containers=4
+  export num_compute_containers=8
+  export num_frontend_containers=1
+  export compute_memory="144GB"
+elif [[ "$(jetpack config azure.metadata.compute.vmSize)" =~ Standard_L48 ]]; then
+  export num_drive_containers=6
+  export num_compute_containers=12
+  export num_frontend_containers=1
+  export compute_memory="216GB"
+elif [[ "$(jetpack config azure.metadata.compute.vmSize)" =~ Standard_L64 ]]; then
+  export num_drive_containers=8
+  export num_compute_containers=16
+  export num_frontend_containers=1
+  export compute_memory="288GB"
+elif [[ "$(jetpack config azure.metadata.compute.vmSize)" =~ Standard_L80 ]]; then
+  export num_drive_containers=10
+  export num_compute_containers=20
+  export num_frontend_containers=1
+  export compute_memory="360GB"
 fi
 
 
@@ -73,20 +93,20 @@ EOL
   mkdir -p $INSTALLATION_PATH
 
   # install OFED if needed (Azure HPC images have OFED included)
-  if [ ! "$(which ofed_info)" ]; then
-    if [ "${ofed_version}" ]; then
-      OFED_NAME=ofed-${ofed_version}
-      if [ "${install_ofed_url}" ]; then
-        wget ${install_ofed_url} -O $INSTALLATION_PATH/$OFED_NAME.tgz
-      else
-        wget http://content.mellanox.com/ofed/MLNX_OFED-${ofed_version}/MLNX_OFED_LINUX-${ofed_version}-ubuntu20.04-x86_64.tgz -O $INSTALLATION_PATH/$OFED_NAME.tgz
-      fi
-      tar xf $INSTALLATION_PATH/$OFED_NAME.tgz --directory $INSTALLATION_PATH --one-top-level=$OFED_NAME
-      cd $INSTALLATION_PATH/$OFED_NAME/*/
-      ./mlnxofedinstall --without-fw-update --add-kernel-support --force
-      /etc/init.d/openibd restart
-    fi
-  fi
+#  if [ ! "$(which ofed_info)" ]; then
+#    if [ "${ofed_version}" ]; then
+#      OFED_NAME=ofed-${ofed_version}
+#      if [ "${install_ofed_url}" ]; then
+#        wget ${install_ofed_url} -O $INSTALLATION_PATH/$OFED_NAME.tgz
+#      else
+#        wget http://content.mellanox.com/ofed/MLNX_OFED-${ofed_version}/MLNX_OFED_LINUX-${ofed_version}-ubuntu20.04-x86_64.tgz -O $INSTALLATION_PATH/$OFED_NAME.tgz
+#      fi
+#      tar xf $INSTALLATION_PATH/$OFED_NAME.tgz --directory $INSTALLATION_PATH --one-top-level=$OFED_NAME
+#      cd $INSTALLATION_PATH/$OFED_NAME/*/
+#      ./mlnxofedinstall --without-fw-update --add-kernel-support --force
+#      /etc/init.d/openibd restart
+#    fi
+#  fi
 
 
   apt update -y
@@ -106,14 +126,15 @@ EOL
 
   # install weka
   WEKA_NAME=${weka_version}
-  if [ "${weka_token}" ]; then
-    curl https://${weka_token}@get.prod.weka.io/dist/v1/install/${weka_version}/${weka_version} | sh
-  elif [ "${install_weka_url}" ]; then
+  if [ "${install_weka_url}" != "None" ]; then
     wget --auth-no-challenge ${install_weka_url} -O $INSTALLATION_PATH/$WEKA_NAME.tar
     tar -xvf $INSTALLATION_PATH/$WEKA_NAME.tar --directory $INSTALLATION_PATH --one-top-level=$WEKA_NAME
     cd $INSTALLATION_PATH/$WEKA_NAME/weka-$WEKA_NAME
     ./install.sh
+  elif [ "${weka_token}" != "None" ]; then
+    curl https://${weka_token}@get.prod.weka.io/dist/v1/install/${weka_version}/${weka_version} | sh
   else
+    jetpack log "ERROR: no download token nor downloadable tar provided"
     exit 1
   fi
 
@@ -121,7 +142,7 @@ EOL
 
   weka local stop
   weka local rm default --force
-  weka local setup container --name drives0 --base-port 14000 --cores ${num_drive_containers} --no-frontends --drives-dedicated-cores ${num_drive_containers}
+  #weka local setup container --name drives0 --base-port 14000 --cores ${num_drive_containers} --no-frontends --drives-dedicated-cores ${num_drive_containers}
 
   #curl ${clusterization_url}?code="${function_app_default_key}" -H "Content-Type:application/json"  -d "{\"name\": \"$HOSTNAME\"}" > /tmp/clusterize.sh
   #chmod +x /tmp/clusterize.sh

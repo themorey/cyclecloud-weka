@@ -70,7 +70,7 @@ Note: The Slurm template is a modified version of the official one [here](https:
 
 You should be able to create a new "Weka" cluster in the Azure CycleCloud User Interface. Once this has been created you can create start the Slurm-Weka cluster and, in the configuration, select the new file system to be used.
 
-### Extending a template to use a Lustre filesystem
+### Extending a template to use a Weka filesystem
 Additional cluster templates (ie. PBSPro, GridEngine, LSF) can be updated to install and mount a Weka filesystem with the additions below.
 
 The node default section will need the following additions:

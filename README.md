@@ -45,12 +45,20 @@ Below are instructions to clone the project from github and add the Weka project
 ```
 git clone https://github.com/themorey/cyclecloud-weka.git
 cd cyclecloud-weka
-cyclecloud project upload <container>
+cyclecloud project upload <cyclecloud_locker_name>
 cyclecloud import_template -f templates/cyclecloud=weka.txt
 ```
 
 An explanation of the [Weka config options](https://github.com/weka/terraform-azure-weka#inputs) can be found on their Github page for the Terraform project.
 
+During installation all but 1 node will turn GREEN in CycleCloud UI and move to _READY_ state.  The "clusterization" via the `clusterize.sh` script is happening on the remaining VM (named `weka-1` in the UI) that will be in _PREPARING_ state.  You can SSH to this VM and tail the log file with command `tail -f /opt/cycle/jetpack/logs/cluster-init/cyclecloud-weka/default/scripts/001-user-data.sh.out` to follow its progress.
+
+---
+**NOTE**
+
+Cluster startup time is ~15 minutes and some recoverable errors may display in CycleCloud UI during that time.  Review the `001-user-data.sh.out` log file on `weka-1` to determine the cause of the error.
+
+---
 
 ### Client install and mount
 An extended Slurm template is included in this repository with the option for choose a CycleCloud deployed Weka filesystem to configure and mount on the nodes:

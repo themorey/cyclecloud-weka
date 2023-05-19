@@ -168,7 +168,8 @@ Order = 20
         Label = Base OS
         ParameterType = Cloud.Image
         Config.OS = linux
-        DefaultValue = "Canonical:0001-com-ubuntu-server-focal:20_04-lts-gen2:"
+        DefaultValue = "Canonical:0001-com-ubuntu-server-focal:20_04-lts-gen2:latest"
+	DefaultValue = "microsoft-dsvm:ubuntu-hpc:1804:latest"
 #        Config.Filter := Package in {"cycle.image.centos7", "almalinux8"}
 
 

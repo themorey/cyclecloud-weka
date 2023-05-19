@@ -49,8 +49,8 @@ get_core_ids $num_frontend_containers frontend_core_ids
 
 # Add the cluster drives
 for vm in ${VMS}; do
-    if [ "${vm}" != "$(hostname)" ]; then
-        while [ "$(curl -s -k --user ${ccuser}:${ccpass} "${ccurl}/clusters/${cluster_name}/nodes" | jq -r --arg jq_vm ${vm} '.nodes[] | select(.Hostname == $jq_vm) |  .Status')" != "Ready" ]; do
+    if [ "$(jetpack config cyclecloud.node.name)" != "weka-1" ]; then
+        while [ "$(curl -s -k --user ${ccuser}:${ccpass} "${ccurl}/clusters/${cluster_name}/nodes" | jq -r '.nodes[] | select(.Template == "weka") |  .State')" != "Started" ]; do
             sleep 2
         done
     fi

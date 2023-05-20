@@ -142,6 +142,7 @@ EOL
 
   weka local stop
   weka local rm default --force
+  weka local start
   #weka local setup container --name drives0 --base-port 14000 --cores ${num_drive_containers} --no-frontends --drives-dedicated-cores ${num_drive_containers}
 
   #curl ${clusterization_url}?code="${function_app_default_key}" -H "Content-Type:application/json"  -d "{\"name\": \"$HOSTNAME\"}" > /tmp/clusterize.sh

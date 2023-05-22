@@ -77,11 +77,12 @@ The node default section will need the following additions:
 
 ```
 [[[configuration]]]
-# Weka mount options
-weka.cluster_name = $WekaClusterName
-weka.mount_point = $WekaMountPoint
-weka.fs = $WekaFileSystem
-
+# Weka mount options 
+weka.cluster_name = ${ifThenElse(CycleWeka, WekaClusterName, undefined)} 
+weka.cluster_address = ${ifThenElse(CycleWeka, undefined, WekaClusterAddress)} 
+weka.mount_point = $WekaMountPoint 
+weka.fs = $WekaFileSystem 
+weka.cycle = $CycleWeka
 [[[cluster-init cyclecloud-weka:client]]]
 ```
 
@@ -92,27 +93,47 @@ These variables (WekaClusterName, WekaMountPoint and WekaFileSystem) are paramet
 Order = 17
 Description = "Add Weka cluster information for mounting"
 
-    [[parameter WekaClusterName]]
-    Label = Weka Cluster
-    Description = Name of the Weka cluster to connect to. This cluster should be orchestrated by the same CycleCloud Server
-    Required = True
-    Config.Plugin = pico.form.QueryDropdown
-    Config.Query = select ClusterName as Name from Cloud.Node where Cluster().IsTemplate =!= True && ClusterInitSpecs["cyclecloud-weka:default"] isnt undefined
-    Config.SetDefault = false
-    
-    [[parameter WekaMountPoint]]
-    Label = Weka Mount Point
-    Description = The local mount point to mount the Weka cluster.
-    DefaultValue = /mnt/weka
-    Required = True
-    
-    [[parameter WekaFileSystem]]
-    Label = Weka FS Name
-    Description = The Weka FileSystem name to mount
-    DefaultValue = "default"
-    Required = True
+     [[parameter CycleWeka]] 
+     HideLabel = true 
+     DefaultValue = false 
+     Widget.Plugin = pico.form.BooleanCheckBox 
+     Widget.Label = CycleCloud deployed Weka? 
+   
+     [[parameter WekaClusterName]] 
+     Label = Weka Cluster 
+     Description = Name of the Weka cluster to connect to. This cluster should be orchestrated by the same CycleCloud Server 
+     Required = True 
+     Config.Plugin = pico.form.QueryDropdown 
+     Config.Query = select ClusterName as Name from Cloud.Node where Cluster().IsTemplate =!= True && ClusterInitSpecs["cyclecloud-weka:default"] isnt undefined 
+     Config.SetDefault = false 
+     Conditions.Excluded := CycleWeka isnt true 
+  
+     [[parameter WekaClusterAddress]] 
+     Label = Weka Addresses 
+     Description = Enter the Load Balancer IP or a list of comma separated Weka Node IPs (ie. 10.0.0.4, 10.0.0.5, 10.0.0.6, 10.0.0.7, 10.0.0.8, 10.0.0.9 ) 
+     Required = True 
+     Config.ParameterType = String 
+     Config.SetDefault = false 
+     Conditions.Excluded := CycleWeka is true 
+      
+     [[parameter WekaMountPoint]] 
+     Label = Weka Mount Point 
+     Description = The local mount point to mount the Weka cluster. 
+     DefaultValue = /mnt/weka 
+     Required = True 
+      
+     [[parameter WekaFileSystem]] 
+     Label = Weka FS Name 
+     Description = The Weka FileSystem name to mount 
+     DefaultValue = "default" 
+     Required = True
 ```
+---
+**NOTE**
 
+The default FileSystem created by Weka is name `default`.
+
+---
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a

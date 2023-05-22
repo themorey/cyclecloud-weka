@@ -133,7 +133,7 @@ if [ ! -f /tmp/weka.full_capacity ]; then
 fi
 
 if [ "${set_obs}" == "True" ]; then
-    if [ !-f /tmp/weka.set_obs ]; then
+    if [ ! -f /tmp/weka.set_obs ]; then
         weka fs tier s3 add azure-obs --site local --obs-name default-local --obs-type AZURE --hostname ${obs_name}.blob.core.windows.net \
           --port 443 --bucket ${obs_container_name} --access-key-id ${obs_name} --secret-key ${obs_blob_key} --protocol https --auth-method AWSSignature4
         weka fs tier s3 attach default azure-obs

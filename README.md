@@ -77,11 +77,12 @@ The node default section will need the following additions:
 
 ```
 [[[configuration]]]
-# Weka mount options
-weka.cluster_name = $WekaClusterName
-weka.mount_point = $WekaMountPoint
-weka.fs = $WekaFileSystem
-
+# Weka mount options 
+weka.cluster_name = D{ifThenElse(CycleWeka, WekaClusterName, undefined)} 
+weka.cluster_address = ${ifThenElse(CycleWeka, undefined, WekaClusterAddress)} 
+weka.mount_point = $WekaMountPoint 
+weka.fs = $WekaFileSystem 
+weka.cycle = $CycleWeka
 [[[cluster-init cyclecloud-weka:client]]]
 ```
 

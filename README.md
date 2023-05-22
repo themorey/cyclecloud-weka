@@ -128,7 +128,12 @@ Description = "Add Weka cluster information for mounting"
      DefaultValue = "default" 
      Required = True
 ```
+---
+**NOTE**
 
+The default FileSystem created by Weka is name `default`.
+
+---
 # Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a

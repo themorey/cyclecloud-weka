@@ -16,7 +16,8 @@ You will need to manually configure an Azure [Promixity Placement Group](https:/
         --name wekaPPG \
         --resource-group myPPGGroup \
         --location eastus \
-        --intent-vm-sizes Standard_L8s_v3 Standard_L16s_v3 
+        --intent-vm-sizes Standard_L8s_v3 Standard_L16s_v3 Standard_L32s_v3 Standard_L48s_v3 Standard_L64s_v3 \
+          Standard_L8as_v3 Standard_L16as_v3 Standard_L32as_v3 Standard_L48as_v3 Standard_L64as_v3
 ```
 
 You will need to use the `Resource_ID` of the PPG in the CycleCloud configuration.  You can get that from the Azure CLI as follows:

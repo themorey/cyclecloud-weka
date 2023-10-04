@@ -7,7 +7,8 @@
         "defaultValue": "weka-vmss"
       },
       "location": {
-        "type": "string"
+        "type": "string",
+        "defaultValue": "eastus"
       },
       "vmSize": {
         "type": "string",

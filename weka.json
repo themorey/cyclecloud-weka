@@ -1,0 +1,61 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+      "vmssName": {
+        "type": "string",
+        "defaultValue": "weka-vmss"
+      },
+      "location": {
+        "type": "string",
+        "defaultValue": "[resourceGroup().location]"
+      },
+      "vmSize": {
+        "type": "string",
+        "defaultValue": "Standard_L8s_v3"
+      }
+    },
+    "variables": {},
+    "resources": [
+        {
+          "type": "Microsoft.Compute/proximityPlacementGroups",
+          "apiVersion": "2023-03-01",
+          "name": "concat([parameters('vmssName'), '-ppg'])",
+          "location": "[parameters('location')]",
+          "properties": {
+            "colocationStatus": {
+              "code": "string",
+              "displayStatus": "string",
+              "level": "string",
+              "message": "string",
+              "time": "string"
+            },
+            "intent": {
+              "vmSizes": [ "[parameters('vmSize')]" ]
+            }
+          }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachineScaleSets",
+            "apiVersion": "2023-03-01",
+            "name": "[parameters('vmssName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [],
+            "tags": {},
+            "properties": {
+                "singlePlacementGroup": null,
+                "platformFaultDomainCount": 1,
+                "proximityPlacementGroup": {
+                    "id": "extensionResourceId(baseResourceId, Microsoft.Compute/proximityPlacementGroups, concat([parameters('vmssName'), '-ppg'])"
+                },
+                "orchestrationMode": "Flexible"
+            }
+        }
+    ],
+    "outputs": {
+      "vmssResourceId": {
+        "type": "string",
+        "value": "[resourceId('Microsoft.Compute/virtualMachineScaleSets', parameters('vmssName'))]"
+      }
+    }
+}

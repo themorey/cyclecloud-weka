@@ -8,7 +8,7 @@
       },
       "location": {
         "type": "string",
-        "defaultValue": "eastus"
+        "defaultValue": "[resourceGroup().location]"
       },
       "vmSize": {
         "type": "string",
@@ -20,16 +20,9 @@
         {
           "type": "Microsoft.Compute/proximityPlacementGroups",
           "apiVersion": "2023-03-01",
-          "name": "concat([parameters('vmssName'), '-ppg'])",
+          "name": "weka-vmss-ppg",
           "location": "[parameters('location')]",
           "properties": {
-            "colocationStatus": {
-              "code": "string",
-              "displayStatus": "string",
-              "level": "string",
-              "message": "string",
-              "time": "string"
-            },
             "intent": {
               "vmSizes": [ "[parameters('vmSize')]" ]
             }
@@ -46,7 +39,7 @@
                 "singlePlacementGroup": null,
                 "platformFaultDomainCount": 1,
                 "proximityPlacementGroup": {
-                    "id": "extensionResourceId(baseResourceId, Microsoft.Compute/proximityPlacementGroups, concat([parameters('vmssName'), '-ppg'])"
+                    "id": "[resourceId('Microsoft.Compute/proximityPlacementGroups', 'weka-vmss-ppg')]"
                 },
                 "orchestrationMode": "Flexible"
             }

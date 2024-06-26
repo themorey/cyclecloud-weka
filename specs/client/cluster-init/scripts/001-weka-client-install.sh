@@ -12,6 +12,7 @@ fs=$(jetpack config weka.fs)
 # Pick a package manager
 if [ "$(which yum)" ]; then
     pkg_cmd=yum
+    yum install -y epel-release
 else
     pkg_cmd=apt
 fi
@@ -19,7 +20,7 @@ ${pkg_cmd} install -y jq
 
 
 # Find the mount addresses if deployed by CycleCloud...otherwise use manual entries
-if [ $(jetpack config weka.cycle) ]; then
+if [ "$(jetpack config weka.cycle)" == "True" ]; then
     cluster_name=$(jetpack config weka.cluster_name)
     # Get the list of Weka cluster IPs from CycleCloud
     IPS=$(curl -s -k --user ${ccuser}:${ccpass} "${ccurl}/clusters/${cluster_name}/nodes" \
